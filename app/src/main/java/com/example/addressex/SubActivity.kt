@@ -35,6 +35,8 @@ class SubActivity : AppCompatActivity() {
         binding.webView.apply {
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
+            settings.allowFileAccessFromFileURLs = true // 🔹 file:// 접근 허용
+            settings.allowUniversalAccessFromFileURLs = true // 🔹 file://에서 JS 호출 허용
             addJavascriptInterface(BridgeInterface(), "Android")
             webViewClient = MyWebViewClient()
             webChromeClient = MyWebChromeClient()
