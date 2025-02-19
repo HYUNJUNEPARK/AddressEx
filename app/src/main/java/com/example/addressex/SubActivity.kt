@@ -27,7 +27,7 @@ class SubActivity : AppCompatActivity() {
         binding = ActivitySubBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        loadPrivacyUrlToWebView("https://hostingaddress.com")
+        loadPrivacyUrlToWebView("file:///android_asset/index.html")
     }
 
     @SuppressLint("SetJavaScriptEnabled")
