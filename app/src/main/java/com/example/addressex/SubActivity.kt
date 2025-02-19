@@ -10,37 +10,34 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.example.addressex.databinding.ActivityMainBinding
+import androidx.webkit.WebViewAssetLoader
 import com.example.addressex.databinding.ActivitySubBinding
 import timber.log.Timber
 
 class SubActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySubBinding
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySubBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        loadPrivacyUrlToWebView("file:///android_asset/index.html")
+        loadPrivacyUrlToWebView()
     }
 
     @SuppressLint("SetJavaScriptEnabled")
-    private fun loadPrivacyUrlToWebView(url: String) {
+    private fun loadPrivacyUrlToWebView() {
         binding.webView.apply {
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
-            settings.allowFileAccessFromFileURLs = true // 🔹 file:// 접근 허용
-            settings.allowUniversalAccessFromFileURLs = true // 🔹 file://에서 JS 호출 허용
+//            settings.allowFileAccessFromFileURLs = true // 🔹 file:// 접근 허용
+//            settings.allowUniversalAccessFromFileURLs = true // 🔹 file://에서 JS 호출 허용
             addJavascriptInterface(BridgeInterface(), "Android")
             webViewClient = MyWebViewClient()
             webChromeClient = MyWebChromeClient()
-            loadUrl(url)
+            //loadUrl("file:///android_asset/index.html")
+            loadUrl("https://appassets.androidplatform.net/assets/index.html")
         }
     }
 
@@ -59,16 +56,20 @@ class SubActivity : AppCompatActivity() {
     }
 
     private inner class MyWebViewClient : WebViewClient() {
-        override fun shouldInterceptRequest(view: WebView?, request: WebResourceRequest?): WebResourceResponse? {
-            request?.let {
-                Timber.d("shouldInterceptRequest() WebViewRequest: URL: ${it.url}")
-            }
-            return super.shouldInterceptRequest(view, request)
-        }
+        val assetLoader = WebViewAssetLoader.Builder()
+            .addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(this@SubActivity))
+            .addPathHandler("/res/", WebViewAssetLoader.ResourcesPathHandler(this@SubActivity))
+            .build()
 
+        override fun shouldInterceptRequest(view: WebView?, request: WebResourceRequest?): WebResourceResponse? {
+            Timber.d("shouldInterceptRequest() WebViewRequest: URL: ${request?.url}")
+
+            if (request == null) return null
+            return assetLoader.shouldInterceptRequest(request.url)
+            //return super.shouldInterceptRequest(view, request)
+        }
         override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
             Timber.d("WebView shouldOverrideUrlLoading() url: ${request?.url}")
-
             return true
         }
         override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
@@ -83,7 +84,9 @@ class SubActivity : AppCompatActivity() {
 
     private inner class MyWebChromeClient : WebChromeClient() {
         override fun onProgressChanged(view: WebView?, newProgress: Int) {
-            if (newProgress == 100) { }
+            if (newProgress == 100) {
+
+            }
         }
 
         /**

@@ -53,4 +53,7 @@ dependencies {
 
     // Timber[https://github.com/JakeWharton/timber]
     implementation(libs.timber)
+
+    //
+    implementation("androidx.webkit:webkit:1.10.0") // 최신 버전 사용
 }
