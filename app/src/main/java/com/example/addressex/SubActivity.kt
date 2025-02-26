@@ -42,10 +42,14 @@ class SubActivity : AppCompatActivity() {
     }
 
     inner class BridgeInterface {
+        /**
+         * @param data 주소 정보
+         * @param code 우편 번호
+         */
         @JavascriptInterface
-        fun processDATA(data: String) {
+        fun processDATA(data: String, code: String?) {
             //주소 검색 API 검색 결과 값이 브릿지 통로를 통해 전달 받는다 (from JS)
-            Timber.d("processDATA() data:$data")
+            Timber.d("processDATA() data:$data, code: $code")
 
             val resultIntent = Intent().apply {
                 putExtra("ADDRESS", data)
